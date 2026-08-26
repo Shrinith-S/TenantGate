@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/src/" />
+  <Project Path="src/TenantGate.Api/TenantGate.Api.csproj" />
+  <Project Path="src/TenantGate.Application/TenantGate.Application.csproj" />
+  <Project Path="src/TenantGate.Domain/TenantGate.Domain.csproj" />
+  <Project Path="src/TenantGate.Infrastructure/TenantGate.Infrastructure.csproj" />
+</Solution>

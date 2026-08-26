@@ -1,0 +1,37 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# .NET build output
+**/bin/
+**/obj/
+
+# Test results
+TestResults/
+*.trx
+
+# NuGet
+*.nupkg
+*.snupkg
+
+# ASP.NET local configuration
+appsettings.Local.json
+
+# User secrets
+secrets.json
+
+# JetBrains
+.idea/
+
+# VS Code
+.vscode/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Angular
+node_modules/
+dist/
+.angular/
