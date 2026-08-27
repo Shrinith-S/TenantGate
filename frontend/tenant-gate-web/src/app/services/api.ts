@@ -1,4 +1,4 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
@@ -13,14 +13,11 @@ export interface Tenant {
   providedIn: 'root'
 })
 export class Api {
+  private readonly baseUrl = 'http://localhost:5137/api';
 
-  private readonly http = inject(HttpClient);
-
-  private readonly apiUrl = 'http://localhost:5137/api';
+  constructor(private http: HttpClient) {}
 
   getTenants(): Observable<Tenant[]> {
-    return this.http.get<Tenant[]>(
-      `${this.apiUrl}/tenants`
-    );
+    return this.http.get<Tenant[]>(`${this.baseUrl}/tenants`);
   }
 }

@@ -1,38 +1,44 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Api, Tenant } from '../../services/api';
 
 @Component({
   selector: 'app-home',
-  imports: [],
   templateUrl: './home.html',
   styleUrl: './home.scss'
 })
 export class Home implements OnInit {
 
-  private readonly api = inject(Api);
+  tenants: Tenant[] = [];
+  loading = true;
+  error = '';
 
-  protected readonly tenants = signal<Tenant[]>([]);
-
-  protected readonly loading = signal(true);
-
-  protected readonly error = signal<string | null>(null);
+  constructor(private api: Api) {}
 
   ngOnInit(): void {
 
-    this.api.getTenants().subscribe({
-      next: (response) => {
-        console.log('Tenants received:', response);
+  console.log('Home initialized');
 
-        this.tenants.set(response);
-        this.loading.set(false);
-      },
+  this.api.getTenants().subscribe({
 
-      error: (error) => {
-        console.error('Failed to load tenants:', error);
+    next: (response: Tenant[]) => {
 
-        this.error.set('Unable to load tenants.');
-        this.loading.set(false);
-      }
-    });
-  }
+      console.log('API RESPONSE:', response);
+
+      this.tenants = response;
+      this.loading = false;
+
+      console.log('Tenants:', this.tenants);
+      console.log('Loading:', this.loading);
+    },
+
+    error: (error: unknown) => {
+
+      console.error('Failed to load tenants', error);
+
+      this.error = 'Failed to load tenants.';
+      this.loading = false;
+    }
+
+  });
+}
 }
