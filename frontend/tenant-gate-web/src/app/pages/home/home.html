@@ -1,0 +1,38 @@
+<div class="home-page">
+
+  <div class="home-card">
+
+    <h1>Welcome to TenantGate</h1>
+
+    <p>
+      API connection successful.
+    </p>
+
+    <h2>Available Tenants</h2>
+
+    @if (loading()) {
+
+      <p>Loading tenants...</p>
+
+    } @else if (error()) {
+
+      <p>{{ error() }}</p>
+
+    } @else {
+
+      <ul>
+        @for (tenant of tenants(); track tenant.id) {
+
+          <li>
+            <strong>{{ tenant.name }}</strong>
+            <span> ({{ tenant.entraTenantId }})</span>
+          </li>
+
+        }
+      </ul>
+
+    }
+
+  </div>
+
+</div>
