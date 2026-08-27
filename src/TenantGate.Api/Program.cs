@@ -15,6 +15,14 @@ builder.Services.AddDbContext<TenantGateDbContext>(options =>
 
 var app = builder.Build();
 
+using (var scope = app.Services.CreateScope())
+{
+    var dbContext = scope.ServiceProvider
+        .GetRequiredService<TenantGateDbContext>();
+
+    await TenantGateDbSeeder.SeedAsync(dbContext);
+}
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
