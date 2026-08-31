@@ -1,26 +1,23 @@
-<div class="home-container">
+<h2>Available Tenants</h2>
 
-  <h1>Welcome to TenantGate</h1>
+<p>Tenant count: {{ tenants.length }}</p>
 
-  <p>API connection successful.</p>
+@for (tenant of tenants; track tenant.id) {
+  <div>
+    <button
+      type="button"
+      (click)="selectTenant(tenant)">
 
-  <h2>Available Tenants</h2>
+      {{ tenant.name }} - {{ tenant.entraTenantId }}
 
-  @if (loading) {
-    <p>Loading tenants...</p>
-  }
-  @else if (error) {
-    <p>{{ error }}</p>
-  }
-  @else {
-    <ul>
-      @for (tenant of tenants; track tenant.id) {
-        <li>
-          <strong>{{ tenant.name }}</strong>
-          ({{ tenant.entraTenantId }})
-        </li>
-      }
-    </ul>
-  }
+    </button>
+  </div>
+}
 
-</div>
+@if (selectedTenant; as tenant) {
+  <div>
+    <h3>Selected Tenant</h3>
+    <p>{{ tenant.name }}</p>
+    <p>{{ tenant.entraTenantId }}</p>
+  </div>
+}

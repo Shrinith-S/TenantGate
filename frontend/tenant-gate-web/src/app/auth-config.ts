@@ -46,18 +46,16 @@ export const msalGuardConfig:
 };
 
 
-export const msalInterceptorConfig:
-  MsalInterceptorConfiguration = {
+export const protectedResourceMap = new Map<string, string[]>();
 
-  interactionType:
-    InteractionType.Redirect,
+protectedResourceMap.set(
+  'http://localhost:5137/api/*',
+  [
+    'api://7af1cd49-f408-4e44-8c4f-bbc2f7b2e241/access_as_user'
+  ]
+);
 
-  protectedResourceMap: new Map([
-    [
-      'http://localhost:5137/api/',
-      [
-        'api://7af1cd49-f408-4e44-8c4f-bbc2f7b2e241/access_as_user'
-      ]
-    ]
-  ])
+export const msalInterceptorConfig: MsalInterceptorConfiguration = {
+  interactionType: InteractionType.Redirect,
+  protectedResourceMap
 };

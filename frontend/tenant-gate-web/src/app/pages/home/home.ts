@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  Component,
+  OnInit,
+  ChangeDetectorRef
+} from '@angular/core';
+
 import { Api, Tenant } from '../../services/api';
 
 @Component({
@@ -9,36 +14,72 @@ import { Api, Tenant } from '../../services/api';
 export class Home implements OnInit {
 
   tenants: Tenant[] = [];
+
+  selectedTenant: Tenant | null = null;
+
   loading = true;
   error = '';
 
-  constructor(private api: Api) {}
+  constructor(
+    private api: Api,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit(): void {
 
-  console.log('Home initialized');
+    console.log('1. Home initialized');
 
-  this.api.getTenants().subscribe({
+    this.api.getTenants().subscribe({
 
-    next: (response: Tenant[]) => {
+      next: (response: Tenant[]) => {
 
-      console.log('API RESPONSE:', response);
+        console.log('2. SUCCESS');
+        console.log('3. Response:', response);
 
-      this.tenants = response;
-      this.loading = false;
+        this.tenants = response;
 
-      console.log('Tenants:', this.tenants);
-      console.log('Loading:', this.loading);
-    },
+        console.log(
+          '4. tenants AFTER assignment:',
+          this.tenants
+        );
 
-    error: (error: unknown) => {
+        console.log(
+          '5. tenant count:',
+          this.tenants.length
+        );
 
-      console.error('Failed to load tenants', error);
+        this.loading = false;
 
-      this.error = 'Failed to load tenants.';
-      this.loading = false;
-    }
+        // TEMPORARY TEST
+        this.cdr.detectChanges();
 
-  });
-}
+        console.log('6. Change detection triggered');
+      },
+
+      error: (error: unknown) => {
+
+        console.error('ERROR:', error);
+
+        this.error = 'Failed to load tenants.';
+        this.loading = false;
+
+        this.cdr.detectChanges();
+      }
+
+    });
+  }
+
+  selectTenant(tenant: Tenant): void {
+
+    this.selectedTenant = tenant;
+
+    localStorage.setItem(
+      'selectedTenantId',
+      tenant.id
+    );
+
+    console.log('Selected tenant:', tenant);
+
+    this.cdr.detectChanges();
+  }
 }

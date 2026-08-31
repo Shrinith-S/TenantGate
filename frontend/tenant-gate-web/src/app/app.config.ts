@@ -37,7 +37,6 @@ import {
   msalInterceptorConfig
 } from './auth-config';
 
-
 export const appConfig: ApplicationConfig = {
 
   providers: [
