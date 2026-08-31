@@ -1,33 +1,25 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using TenantGate.Infrastructure.Persistence;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using TenantGate.Application.Services;
 
 namespace TenantGate.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Authorize]
 public class TenantsController : ControllerBase
 {
-    private readonly TenantGateDbContext _dbContext;
+    private readonly ITenantService _tenantService;
 
-    public TenantsController(TenantGateDbContext dbContext)
+    public TenantsController(ITenantService tenantService)
     {
-        _dbContext = dbContext;
+        _tenantService = tenantService;
     }
 
     [HttpGet]
     public async Task<IActionResult> GetTenants()
     {
-        var tenants = await _dbContext.Tenants
-            .AsNoTracking()
-            .Select(x => new
-            {
-                x.Id,
-                x.EntraTenantId,
-                x.Name,
-                x.IsActive
-            })
-            .ToListAsync();
+        var tenants = await _tenantService.GetTenantsAsync();
 
         return Ok(tenants);
     }
