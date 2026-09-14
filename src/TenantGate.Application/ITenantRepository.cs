@@ -4,5 +4,9 @@ namespace TenantGate.Application;
 
 public interface ITenantRepository
 {
-    Task<IReadOnlyList<Tenant>> GetActiveTenantsAsync();
+    Task<IReadOnlyList<Tenant>> GetActiveTenantsAsync(
+        string entraTenantId);
+
+    Task<Tenant?> GetActiveTenantByEntraTenantIdAsync(
+        string entraTenantId);
 }

@@ -1,12 +1,14 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using TenantGate.Api.Authorization;
+using TenantGate.Api.Context;
 using TenantGate.Application;
+using TenantGate.Application.Context;
 using TenantGate.Application.Services;
 using TenantGate.Infrastructure;
 using TenantGate.Infrastructure.Persistence;
-using System.IdentityModel.Tokens.Jwt;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -40,9 +42,6 @@ builder.Services.AddDbContext<TenantGateDbContext>(options =>
 // ===============================
 // Application Services
 // ===============================
-
-builder.Services.AddScoped<ITenantService, TenantService>();
-builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 
 
 // ===============================
@@ -134,33 +133,55 @@ builder.Services
             OnTokenValidated = context =>
             {
                 Console.WriteLine();
+                Console.WriteLine("========== JWT TOKEN VALIDATED ==========");
+
                 Console.WriteLine(
-                    "========== JWT TOKEN VALIDATED =========="
+                    $"OID: {context.Principal?.FindFirst(
+                        "http://schemas.microsoft.com/identity/claims/objectidentifier"
+                    )?.Value}"
                 );
 
                 Console.WriteLine(
-                    $"OID: {context.Principal?.FindFirst("oid")?.Value}"
+                    $"TenantId: {context.Principal?.FindFirst(
+                        "http://schemas.microsoft.com/identity/claims/tenantid"
+                    )?.Value}"
                 );
 
-                Console.WriteLine(
-                    $"TID: {context.Principal?.FindFirst("tid")?.Value}"
-                );
-
-                Console.WriteLine(
-                    "=========================================="
-                );
+                Console.WriteLine("==========================================");
 
                 return Task.CompletedTask;
             }
         };
     });
 
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("TenantAccess", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(
+            new TenantAccessRequirement());
+    });
+});
 
 
 // ===============================
 // Build application
 // ===============================
+
+
+builder.Services.AddScoped<ITenantService, TenantService>();
+builder.Services.AddScoped<ITenantRepository, TenantRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+
+builder.Services.AddHttpContextAccessor();
+
+builder.Services.AddScoped<ITenantContext, TenantContext>();
+builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
+
+builder.Services.AddScoped<ITenantAuthorizationService, TenantAuthorizationService>();
+builder.Services.AddScoped<IAuthorizationHandler, TenantAccessHandler>();
+
 
 var app = builder.Build();
 

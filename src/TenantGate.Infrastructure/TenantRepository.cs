@@ -14,11 +14,23 @@ public class TenantRepository : ITenantRepository
         _dbContext = dbContext;
     }
 
-    public async Task<IReadOnlyList<Tenant>> GetActiveTenantsAsync()
+    public async Task<IReadOnlyList<Tenant>> GetActiveTenantsAsync(
+        string entraTenantId)
     {
         return await _dbContext.Tenants
             .AsNoTracking()
-            .Where(x => x.IsActive)
+            .Where(x => x.IsActive &&
+                        x.EntraTenantId == entraTenantId)
             .ToListAsync();
+    }
+
+    public async Task<Tenant?> GetActiveTenantByEntraTenantIdAsync(
+    string entraTenantId)
+    {
+        return await _dbContext.Tenants
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.IsActive &&
+                x.EntraTenantId == entraTenantId);
     }
 }
