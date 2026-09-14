@@ -73,37 +73,7 @@ builder.Services
 
                 ValidateAudience = true,
 
-                ValidAudience = audience,
-
-                AudienceValidator =
-                    (tokenAudiences, securityToken, validationParameters) =>
-                    {
-                        Console.WriteLine();
-                        Console.WriteLine(
-                            "========== AUDIENCE DEBUG =========="
-                        );
-
-                        Console.WriteLine(
-                            $"Expected audience: {audience}"
-                        );
-
-                        Console.WriteLine(
-                            $"Token audiences: " +
-                            $"{string.Join(", ", tokenAudiences ?? [])}"
-                        );
-
-                        Console.WriteLine(
-                            $"Security token type: " +
-                            $"{securityToken.GetType().Name}"
-                        );
-
-                        Console.WriteLine(
-                            "===================================="
-                        );
-
-                        return tokenAudiences != null &&
-                               tokenAudiences.Contains(audience);
-                    }
+                ValidAudience = audience
             };
 
         options.Events = new JwtBearerEvents
