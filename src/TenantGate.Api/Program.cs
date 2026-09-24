@@ -9,6 +9,7 @@ using TenantGate.Application.Context;
 using TenantGate.Application.Services;
 using TenantGate.Infrastructure;
 using TenantGate.Infrastructure.Persistence;
+using TenantGate.Api.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -143,11 +144,14 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<ITenantRepository, TenantRepository>();
 builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<ITenantContext, TenantContext>();
 builder.Services.AddScoped<ICurrentUserContext, CurrentUserContext>();
+builder.Services.AddScoped<ITenantResolver, TenantResolver>();
+builder.Services.AddScoped<ICurrentTenant, CurrentTenant>();
 
 builder.Services.AddScoped<ITenantAuthorizationService, TenantAuthorizationService>();
 builder.Services.AddScoped<IAuthorizationHandler, TenantAccessHandler>();
@@ -183,7 +187,7 @@ app.UseHttpsRedirection();
 app.UseCors("Angular");
 
 app.UseAuthentication();
-
+app.UseTenantInitialization();
 app.UseAuthorization();
 
 app.MapControllers();

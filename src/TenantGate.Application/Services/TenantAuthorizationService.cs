@@ -32,9 +32,7 @@ public class TenantAuthorizationService : ITenantAuthorizationService
         }
 
         var user = await _userRepository
-            .GetByEntraObjectIdAsync(
-                tenant.Id,
-                _currentUserContext.EntraObjectId.ToString());
+            .GetByEntraObjectIdAsync(_currentUserContext.EntraObjectId.ToString());
 
         return user != null;
     }

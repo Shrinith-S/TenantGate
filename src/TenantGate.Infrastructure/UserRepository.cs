@@ -15,14 +15,43 @@ public class UserRepository : IUserRepository
     }
 
     public async Task<User?> GetByEntraObjectIdAsync(
-        Guid tenantId,
-        string entraObjectId)
+    string entraObjectId)
     {
         return await _dbContext.Users
             .AsNoTracking()
             .FirstOrDefaultAsync(x =>
-                x.TenantId == tenantId &&
                 x.EntraObjectId == entraObjectId &&
                 x.IsActive);
+    }
+
+    public async Task<IReadOnlyList<User>> GetActiveAsync()
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .Where(x => x.IsActive)
+            .ToListAsync();
+    }
+
+    public async Task<User?> GetByIdAsync(Guid userId)
+    {
+        return await _dbContext.Users
+            .AsNoTracking()
+            .FirstOrDefaultAsync(x =>
+                x.Id == userId &&
+                x.IsActive);
+    }
+
+    public async Task AddAsync(User user)
+    {
+        await _dbContext.Users.AddAsync(user);
+
+        await _dbContext.SaveChangesAsync();
+    }
+
+    public async Task UpdateAsync(User user)
+    {
+        _dbContext.Users.Update(user);
+
+        await _dbContext.SaveChangesAsync();
     }
 }

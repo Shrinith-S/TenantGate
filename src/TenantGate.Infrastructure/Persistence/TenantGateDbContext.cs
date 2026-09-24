@@ -1,14 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using TenantGate.Application.Context;
 using TenantGate.Domain.Entities;
 
 namespace TenantGate.Infrastructure.Persistence;
 
 public class TenantGateDbContext : DbContext
 {
+    private readonly ICurrentTenant _currentTenant;
+
     public TenantGateDbContext(
-        DbContextOptions<TenantGateDbContext> options)
+        DbContextOptions<TenantGateDbContext> options,
+        ICurrentTenant currentTenant)
         : base(options)
     {
+        _currentTenant = currentTenant;
     }
 
     public DbSet<Tenant> Tenants => Set<Tenant>();
@@ -57,6 +62,9 @@ public class TenantGateDbContext : DbContext
                 x.EntraObjectId
             })
             .IsUnique();
+
+            entity.HasQueryFilter(
+                x => x.TenantId == _currentTenant.TenantId);
         });
     }
 }
