@@ -22,6 +22,108 @@ namespace TenantGate.Infrastructure.Persistence.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("TenantGate.Domain.Entities.FunctionalPrivilege", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystemPrivilege")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("FunctionalPrivileges");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.FunctionalTechnicalPrivilege", b =>
+                {
+                    b.Property<Guid>("FunctionalPrivilegeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TechnicalPrivilegeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("FunctionalPrivilegeId", "TechnicalPrivilegeId");
+
+                    b.HasIndex("TechnicalPrivilegeId");
+
+                    b.ToTable("FunctionalTechnicalPrivileges");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.PrivilegeSet", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystemPrivilegeSet")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("PrivilegeSets");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.PrivilegeSetPrivilege", b =>
+                {
+                    b.Property<Guid>("PrivilegeSetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("FunctionalPrivilegeId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("PrivilegeSetId", "FunctionalPrivilegeId");
+
+                    b.HasIndex("FunctionalPrivilegeId");
+
+                    b.ToTable("PrivilegeSetPrivileges");
+                });
+
             modelBuilder.Entity("TenantGate.Domain.Entities.Role", b =>
                 {
                     b.Property<Guid>("Id")
@@ -53,6 +155,62 @@ namespace TenantGate.Infrastructure.Persistence.Migrations
                         .IsUnique();
 
                     b.ToTable("Roles");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.RolePrivilegeSet", b =>
+                {
+                    b.Property<Guid>("RoleId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("PrivilegeSetId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("RoleId", "PrivilegeSetId");
+
+                    b.HasIndex("PrivilegeSetId");
+
+                    b.ToTable("RolePrivilegeSets");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.TechnicalPrivilege", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("ApiScope")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("Code")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsSystemPrivilege")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TenantId", "Code")
+                        .IsUnique();
+
+                    b.ToTable("TechnicalPrivileges");
                 });
 
             modelBuilder.Entity("TenantGate.Domain.Entities.Tenant", b =>
@@ -125,6 +283,9 @@ namespace TenantGate.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("RoleId")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("TenantId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("UserId", "RoleId");
 
                     b.HasIndex("RoleId");
@@ -132,7 +293,91 @@ namespace TenantGate.Infrastructure.Persistence.Migrations
                     b.ToTable("UserRoles");
                 });
 
+            modelBuilder.Entity("TenantGate.Domain.Entities.FunctionalPrivilege", b =>
+                {
+                    b.HasOne("TenantGate.Domain.Entities.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.FunctionalTechnicalPrivilege", b =>
+                {
+                    b.HasOne("TenantGate.Domain.Entities.FunctionalPrivilege", "FunctionalPrivilege")
+                        .WithMany()
+                        .HasForeignKey("FunctionalPrivilegeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TenantGate.Domain.Entities.TechnicalPrivilege", "TechnicalPrivilege")
+                        .WithMany()
+                        .HasForeignKey("TechnicalPrivilegeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FunctionalPrivilege");
+
+                    b.Navigation("TechnicalPrivilege");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.PrivilegeSet", b =>
+                {
+                    b.HasOne("TenantGate.Domain.Entities.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.PrivilegeSetPrivilege", b =>
+                {
+                    b.HasOne("TenantGate.Domain.Entities.FunctionalPrivilege", "FunctionalPrivilege")
+                        .WithMany()
+                        .HasForeignKey("FunctionalPrivilegeId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TenantGate.Domain.Entities.PrivilegeSet", "PrivilegeSet")
+                        .WithMany()
+                        .HasForeignKey("PrivilegeSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("FunctionalPrivilege");
+
+                    b.Navigation("PrivilegeSet");
+                });
+
             modelBuilder.Entity("TenantGate.Domain.Entities.Role", b =>
+                {
+                    b.HasOne("TenantGate.Domain.Entities.Tenant", null)
+                        .WithMany()
+                        .HasForeignKey("TenantId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.RolePrivilegeSet", b =>
+                {
+                    b.HasOne("TenantGate.Domain.Entities.PrivilegeSet", "PrivilegeSet")
+                        .WithMany()
+                        .HasForeignKey("PrivilegeSetId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("TenantGate.Domain.Entities.Role", "Role")
+                        .WithMany()
+                        .HasForeignKey("RoleId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("PrivilegeSet");
+
+                    b.Navigation("Role");
+                });
+
+            modelBuilder.Entity("TenantGate.Domain.Entities.TechnicalPrivilege", b =>
                 {
                     b.HasOne("TenantGate.Domain.Entities.Tenant", null)
                         .WithMany()
